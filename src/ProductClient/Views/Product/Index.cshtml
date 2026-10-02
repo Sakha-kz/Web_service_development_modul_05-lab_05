@@ -1,0 +1,121 @@
+@model IEnumerable<ProductClient.Models.Product>
+
+@{
+    ViewData["Title"] = "Каталог товаров";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="fw-bold mb-0">Каталог товаров</h2>
+        <p class="text-muted mb-0">Товары загружены через Web API (GET /api/products) с использованием HttpClient</p>
+    </div>
+    <a asp-action="Create" class="btn btn-warning shadow-sm fw-semibold">
+        <i class="bi bi-plus-circle-fill me-1"></i>Добавить товар
+    </a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 80px;" class="ps-3">ID</th>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Цена</th>
+                        <th>Количество</th>
+                        <th style="width: 220px;" class="text-end pe-3">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-3 fw-bold text-secondary">@item.Id</td>
+                                <td class="fw-bold">@item.Name</td>
+                                <td class="text-muted small">@item.Description</td>
+                                <td class="fw-semibold text-primary">@item.Price.ToString("N0") ₸</td>
+                                <td>
+                                    <span class="badge @(item.Quantity > 5 ? "bg-success" : "bg-warning text-dark")">
+                                        @item.Quantity шт.
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="Инфо">
+                                            <i class="bi bi-eye"></i> Инфо
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary" title="Изменить">
+                                            <i class="bi bi-pencil"></i> Изменить
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal" 
+                                                data-id="@item.Id" 
+                                                data-name="@item.Name" title="Удалить">
+                                            <i class="bi bi-trash"></i> Удалить
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                <i class="bi bi-box-seam display-6 d-block mb-2"></i>
+                                Список товаров пуст или Web API недоступен.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" method="post" asp-action="Delete">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="deleteProductId" />
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Удаление товара</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Вы действительно хотите удалить товар <strong id="deleteProductName"></strong>?
+                    <div class="alert alert-warning mt-3 mb-0 small">
+                        Это действие отправит HTTP DELETE /api/products/{id} и удалит товар из каталога.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const deleteModal = document.getElementById('deleteModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                document.getElementById('deleteProductId').value = id;
+                document.getElementById('deleteProductName').textContent = name;
+                document.getElementById('deleteForm').action = '/Product/Delete/' + id;
+            });
+        }
+    </script>
+}

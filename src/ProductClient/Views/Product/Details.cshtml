@@ -1,0 +1,47 @@
+@model ProductClient.Models.Product
+
+@{
+    ViewData["Title"] = "Подробная информация о товаре";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-info text-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-box-seam me-2"></i>Товар #@Model.Id</h4>
+            </div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">ID товара:</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.Id</dd>
+
+                    <dt class="col-sm-4 text-muted">Название:</dt>
+                    <dd class="col-sm-8 fw-bold fs-5">@Model.Name</dd>
+
+                    <dt class="col-sm-4 text-muted">Описание:</dt>
+                    <dd class="col-sm-8 text-secondary">@Model.Description</dd>
+
+                    <dt class="col-sm-4 text-muted">Цена:</dt>
+                    <dd class="col-sm-8 fw-bold text-primary fs-5">@Model.Price.ToString("N0") ₸</dd>
+
+                    <dt class="col-sm-4 text-muted">Остаток на складе:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge @(Model.Quantity > 5 ? "bg-success" : "bg-warning text-dark")">
+                            @Model.Quantity шт.
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer bg-light p-3 d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Назад к каталогу
+                </a>
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                        <i class="bi bi-pencil me-1"></i>Изменить
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
